@@ -1,0 +1,30 @@
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
+{% extends "bases/rootbase.html" %}
+{% block hheader %}
+<header>
+    <h1>Header</h1>
+</header>
+{% endblock %}
+
+{% block body %}
+
+<script type="text/javascript">
+    $(document).ready(function() {
+        console.log("ready");
+        $.get("/api/v1/user/follows", function(data){
+            if (data.code == 0) {
+                console.log(data);
+            } else {
+                alert(data.msg);
+            }
+        });
+    });
+</script>
+
+{% endblock %}
+
+{% block hfooter %}
+<footer>
+    <h2>Footer</h2>
+</footer>
+{% endblock %}

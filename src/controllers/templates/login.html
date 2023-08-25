@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>星星之光(Hopes)</title>
+    </head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.0/jquery.min.js">
+    </script>
+    
+    <body>
+        <div>
+            <p>
+                登录:
+            </p>
+            <form id="login" method="post">
+                手机号: <input type="text" name="phone" placeholder="请输入手机号">
+                <p></p>
+                密 码: <input type="password" name="password" placeholder="请输入密码">
+                <p></p>
+                <input id="login_btn" type="button" value="登录">
+            </form>
+        </div>
+    </body>
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+            print("test -->" + document.cookie)
+            if (document.cookie.length > 0) {
+                alert(document.cookie);
+            }
+            $("#login_btn").click(function() {
+                var phone = $("input[name='phone']").val();
+                var password = $("input[name='password']").val();
+                if (phone == "") {
+                    alert("手机号不能为空");
+                    return
+                }
+
+                if (password == "") {
+                    alert("密码不能为空");
+                    return
+                }
+
+                console.log(phone, password);
+
+                $.post("/api/v1/account/login",{"phone":phone,"password":password},function(data){
+                    if (data.code == 0) {
+                        alert("登录成功");
+                    } else {
+                        alert(data.msg);
+                    }
+                });
+            });
+        });
+    </script>
+</html>
