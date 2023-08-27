@@ -9,8 +9,7 @@ import datetime
 from utils import clear_none_data
 
 defaultMaxAge = 7 * 24 * 60 * 60
-refreshDelta = 60 * 3
-
+refreshDelta = 2 * 24 * 60 * 60
 
 class AuthException(Exception):
     def __init__(self, code: int, msg: str, *args: object) -> None:
@@ -19,7 +18,10 @@ class AuthException(Exception):
         super().__init__(*args)
 
 def verify(refresh: bool):
-    token = request.cookies.get("Authorization").split(" ")[1]
+    authorization = request.cookies.get("Authorization")
+    if authorization is None:
+        raise AuthException(401, "未登录")
+    token = authorization.split(" ")[1]
     (data, _, _, isAuth) = auth.parse_payload(token=token)
     if isAuth == False:
         raise AuthException(401, "token验证失败")
@@ -29,7 +31,7 @@ def verify(refresh: bool):
     if user is None:
         raise AuthException(401, "用户信息有误")
 
-    un_time = timestamp(datetime.datetime.now())
+    un_time = timestamp(datetime.datetime.now(datetime.timezone.utc))
     if last_expires <= un_time:
         raise AuthException(401, "token过期")
 
@@ -40,16 +42,20 @@ def generate_auth_token(user: User, maxAge: int = None) -> tuple[str, datetime.d
         }, iss=f"{user.id}{user.username}", maxAge=None)
     
     token = auth.encode_payload(clear_none_data(payload))
-    maxAge = maxAge if maxAge is not None else defaultMaxAge
-    exipres = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(seconds=maxAge)
+    exipres_delta = maxAge if maxAge is not None else defaultMaxAge
+    exipres = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(seconds=exipres_delta)
     exipresTimestamp = timestamp(exipres)
     user_info = {"id": user.id, "token": token, "exp": exipresTimestamp}
-    UserAuthStorage.save_auth_info(value=user_info, id=user.id, expires=maxAge)
+    UserAuthStorage.save_auth_info(value=user_info, id=user.id, expires=exipres_delta)
     return (token, exipres)
 
 
 def current_user_id() -> int:
-    token = request.headers.get("Authorization")
+    authorization = request.cookies.get("Authorization")
+    if authorization is None:
+        return 0
+    
+    token = authorization.split(" ")[1]
     (data, _, _, isAuth) = auth.parse_payload(token=token)
     return data.get("id") if isAuth else 0
 
@@ -122,7 +128,7 @@ def refreshTokenIfNeed(response):
     token = authorization.split(" ")[1]
     result = refreshToken(token)
     if result is not None:
-        response.set_cookie("Authorization", result[0], domain="127.0.0.1", expires=result[1])
+        response.set_cookie("Authorization", f"Bearer {result[0]}", domain="127.0.0.1", expires=result[1])
     
 
 

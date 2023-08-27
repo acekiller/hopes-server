@@ -2,7 +2,7 @@ from flask import Blueprint, request, make_response
 from utils import ResponseData
 from database.user_db import UserDb
 from . import api
-import utils
+import app_tools
 
 account_api = Blueprint("account_api", __name__, url_prefix='/v1/account')
 
@@ -26,8 +26,7 @@ def login():
     if user.password != password:
         return ResponseData.custom_error(10001, "密码错误")
 
-    (token, exp) = utils.generate_auth_token(user)
-    print(token, exp)
+    (token, exp) = app_tools.generate_auth_token(user)
     formd = f"Bearer {token}"
     user_dict = ResponseData.model_to_dict(user, exclude_fields=["password", "phone"])
     resp = make_response(ResponseData.response_data(user_dict))
@@ -46,7 +45,7 @@ def register():
     if user is None:
         return ResponseData.common_error("注册失败")
     
-    token, exp = utils.generate_auth_token(user)
+    token, exp = app_tools.generate_auth_token(user)
     formd = f"Bearer {token}"
     user_dict = ResponseData.model_to_dict(user, exclude_fields=["password", "phone"])
     resp = make_response(ResponseData.response_data(user_dict))
@@ -58,7 +57,7 @@ def logout():
     '''
     用户退出登录接口
     '''
-    utils.clear_auth_data()
+    app_tools.clear_auth_data()
     resp = make_response(ResponseData.response_data(None))
     resp.delete_cookie("Authorization")
     return resp

@@ -38,7 +38,7 @@ def detail():
             nickname: string
     '''
     argsId = request.args.get("id", type=int)
-    uid = int(argsId) if argsId is not None else utils.current_user_id()
+    uid = int(argsId) if argsId is not None else app_tools.current_user_id()
     if uid is None or uid <= 0:
         return ResponseData.notLogin()
 
