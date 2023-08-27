@@ -1,6 +1,6 @@
 from enum import Enum
 from flask_sqlalchemy.model import Model
-from utils import model_to_dict, clear_none
+from utils import model_to_dict, clear_none_data
 
 ErrorCode = Enum("ErrorCode", {
     "SUCCESS": 0, 
@@ -35,7 +35,19 @@ def response_data(data):
         return {"code": ErrorCode.SUCCESS.value}
     if not isinstance(data, Model):
         return {"code": ErrorCode.SUCCESS.value, "data": data}
-    return {"code": ErrorCode.SUCCESS.value, "data": clear_none(model_to_dict(data))}
+    return {"code": ErrorCode.SUCCESS.value, "data": clear_none_data(model_to_dict(data))}
     
 def response_dataList(list):
         return {"code": ErrorCode.SUCCESS.value, "data": list}
+
+
+__all__ = [
+    "parameter_loss",
+    "parameter_error",
+    "dataNotExist",
+    "notLogin",
+    "common_error",
+    "custom_error",
+    "response_data",
+    "response_dataList",
+]

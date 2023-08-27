@@ -1,11 +1,10 @@
 from flask import Flask
 from database import mdb
 from auth import auth
-from redis import Redis
+from auth_storage import redis_store
 import config as config
 
 app = Flask(__name__)
-redis_store = Redis(host=config.redis_host, port=config.redis_port, db=0)
 
 class App():
     @classmethod

@@ -1,17 +1,17 @@
 import datetime
 from flask_sqlalchemy.model import Model
 
-def clear_none(data):
+def clear_none_data(data):
     if data is None:
         return None
     elif isinstance(data, list):
-        return list(filter(lambda x: x is not None, map(clear_none, data)))
+        return list(filter(lambda x: x is not None, map(clear_none_data, data)))
     elif not isinstance(data, dict):
         return data
     else:
         r = dict(
                 filter(lambda x: x[1] is not None,
-                    map(lambda x: (x[0], clear_none(x[1])),
+                    map(lambda x: (x[0], clear_none_data(x[1])),
                         data.items())))
         return r if bool(r) else None
     
@@ -72,3 +72,9 @@ def model_to_dict(model: Model, fields = None, exchange_fields = None, exclude_f
         obj_dict[field] = value
  
     return obj_dict
+
+
+__all__ = [
+    "clear_none_data",
+    "model_to_dict",
+]

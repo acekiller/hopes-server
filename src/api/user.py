@@ -1,23 +1,22 @@
 from flask import Blueprint, request
-from . import response_data as response_data
+from utils import ResponseData
 from database.user_db import UserDb
 from . import api
-from flask_jwt_extended import jwt_required
-from auth import auth
+import app_tools
 
 user_api = Blueprint("user_api", __name__, url_prefix="/v1/user")
 
 @user_api.route("follows", methods=["GET"])
-@jwt_required
+@app_tools.hopes_auth_check()
 def follows():
-    identify = auth.get_user_id()
-    return response_data.response_data({"list": [], "count": None})
+    # identify = utils.current_user_id()
+    return ResponseData.response_data({"list": [], "count": None})
 
-@user_api.route("/follows", methods=["POST"])
-@jwt_required
-def followsMe():
-    identify = auth.get_user_id()
-    return response_data.response_data({"list": [], "count": None})
+@user_api.route("/follow", methods=["POST"])
+@app_tools.hopes_auth_check()
+def follow_me():
+    # identify = utils.current_user_id()
+    return ResponseData.response_data({"list": [], "count": None})
 
 @user_api.route("/info", methods=["GET"])
 def detail():
@@ -39,15 +38,19 @@ def detail():
             nickname: string
     '''
     argsId = request.args.get("id", type=int)
-    uid = int(argsId) if argsId is not None else int(auth.user_identify())
+    uid = int(argsId) if argsId is not None else utils.current_user_id()
     if uid is None or uid <= 0:
-        return response_data.notLogin()
+        return ResponseData.notLogin()
 
     user = UserDb.getUserByID(uid)
     if user is None:
-        return response_data.dataNotExist(f"id={uid}")
+        return ResponseData.dataNotExist(f"id={uid}")
     
-    return response_data.response_data(user)
+    return ResponseData.response_data(user)
 
 
 api.api_bp.register_blueprint(user_api)
+
+__all__ = [
+    "user_api",
+]

@@ -1,4 +1,5 @@
-from app import app as app
+from app import app
+from auth import auth
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=3000, debug=True)

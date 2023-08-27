@@ -31,4 +31,8 @@ def detail():
 def like():
     pass
 
-api_bp.register_blueprint(api_bp)
+api_bp.register_blueprint(forum_bp)
+
+__all__ = [
+    "forum_bp",
+]

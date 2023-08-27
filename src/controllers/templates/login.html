@@ -25,10 +25,6 @@
 
     <script type="text/javascript">
         $(document).ready(function() {
-            print("test -->" + document.cookie)
-            if (document.cookie.length > 0) {
-                alert(document.cookie);
-            }
             $("#login_btn").click(function() {
                 var phone = $("input[name='phone']").val();
                 var password = $("input[name='password']").val();
@@ -45,11 +41,7 @@
                 console.log(phone, password);
 
                 $.post("/api/v1/account/login",{"phone":phone,"password":password},function(data){
-                    if (data.code == 0) {
-                        alert("登录成功");
-                    } else {
-                        alert(data.msg);
-                    }
+                    console.log(data);
                 });
             });
         });

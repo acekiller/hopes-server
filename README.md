@@ -12,3 +12,6 @@ Hopes是一款儿童心理问题相关产品的服务器接口系统。
 2. flask-jwt-extended
 3. flask-sqlalchemy
 4. redis
+
+**权限认证**
+对于需要验证权限的接口：需要将 Authorization设置为Bearer access_token
