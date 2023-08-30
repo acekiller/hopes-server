@@ -11,6 +11,7 @@ def login():
     '''
     用户登录接口
     '''
+    print(request.form)
     phone = request.form.get("phone", type=str)
     if phone is None:
         return ResponseData.parameter_loss("phone")
